@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+
+ 
+
+yay -S --needed --noconfirm archboki-fuzzel-config
+yay -S --needed --noconfirm archboki-ghostty-config
+yay -S --needed --noconfirm archboki-shells
+yay -S --needed --noconfirm archboki-xfce
+yay -S --needed --noconfirm arch-boki-fastfetch
+yay -S --needed --noconfirm arch-boki-fonts-git
+yay -S --needed --noconfirm arch-boki-icon-themes-fixer
+yay -S --needed --noconfirm arch-boki-kitty-git
+yay -S --needed --noconfirm arch-boki-sddm-simplicity
+yay -S --needed --noconfirm arch-boki-viper-grub-theme-main
+yay -S --needed --noconfirm arch-boki-wezterm

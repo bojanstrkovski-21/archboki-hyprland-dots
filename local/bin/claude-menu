@@ -1,0 +1,233 @@
+#!/usr/bin/env bash
+
+# Function to show main menu
+show_main_menu() {
+    options="󰀻 Apps\n󰧑 Learn\n Capture\n󰔎 Toggle\n Style\n Setup\n󰉉 Install\n󰭌 Remove\n Update\n About\n System"
+    echo -e "$options" | walker --dmenu --theme archboki-menu -p "Type to search"
+}
+
+# Function to show Apps sub-menu
+show_apps_menu() {
+    apps_options=" Web Browser\n Text Editor\n File Manager\n Terminal\n Media Player\n Image Viewer\n󰌽 Games\n Office Suite"
+    selected=$(echo -e "$apps_options" | walker --dmenu --theme archboki-menu -p "Apps")
+    
+    case "$selected" in
+        *"Web Browser") echo "Opening web browser..."; firefox & ;;
+        *"Text Editor") echo "Opening text editor..."; code & ;;
+        *"File Manager") echo "Opening file manager..."; nautilus & ;;
+        *"Terminal") echo "Opening terminal..."; gnome-terminal & ;;
+        *"Media Player") echo "Opening media player..."; vlc & ;;
+        *"Image Viewer") echo "Opening image viewer..."; eog & ;;
+        *"Games") echo "Opening games menu..."; # Add your games launcher here ;;
+        *"Office Suite") echo "Opening office suite..."; libreoffice & ;;
+        *) if [ -n "$selected" ]; then echo "Unknown selection: $selected"; fi ;;
+    esac
+}
+
+# Function to show Learn sub-menu
+show_learn_menu() {
+    learn_options=" Documentation\n󰗀 Tutorials\n Programming\n󰋗 Books\n󰌷 Videos\n Research\n Languages"
+    selected=$(echo -e "$learn_options" | walker --dmenu --theme archboki-menu -p "Learn")
+    
+    case "$selected" in
+        *"Documentation") echo "Opening documentation..."; # Add your documentation command ;;
+        *"Tutorials") echo "Opening tutorials..."; # Add your tutorials command ;;
+        *"Programming") echo "Opening programming resources..."; # Add your programming command ;;
+        *"Books") echo "Opening books collection..."; # Add your books command ;;
+        *"Videos") echo "Opening video tutorials..."; # Add your videos command ;;
+        *"Research") echo "Opening research tools..."; # Add your research command ;;
+        *"Languages") echo "Opening language learning..."; # Add your language command ;;
+        *) if [ -n "$selected" ]; then echo "Unknown selection: $selected"; fi ;;
+    esac
+}
+
+# Function to show Capture sub-menu
+show_capture_menu() {
+    capture_options=" Screenshot\n Screen Recording\n Audio Recording\n󰄀 Photo\n Notes\n󰻃 Clipboard"
+    selected=$(echo -e "$capture_options" | walker --dmenu --theme archboki-menu -p "Capture")
+    
+    case "$selected" in
+        *"Screenshot") echo "Taking screenshot..."; gnome-screenshot & ;;
+        *"Screen Recording") echo "Starting screen recording..."; obs & ;;
+        *"Audio Recording") echo "Starting audio recording..."; audacity & ;;
+        *"Photo") echo "Opening camera..."; cheese & ;;
+        *"Notes") echo "Opening notes..."; # Add your notes app ;;
+        *"Clipboard") echo "Opening clipboard manager..."; # Add clipboard manager ;;
+        *) if [ -n "$selected" ]; then echo "Unknown selection: $selected"; fi ;;
+    esac
+}
+
+# Function to show Toggle sub-menu
+show_toggle_menu() {
+    toggle_options="󰕾 Audio\n󰃞 Bluetooth\n WiFi\n󰐥 Dark Mode\n󰍹 Night Light\n Notifications\n󰒲 Do Not Disturb"
+    selected=$(echo -e "$toggle_options" | walker --dmenu --theme archboki-menu -p "Toggle")
+    
+    case "$selected" in
+        *"Audio") echo "Toggling audio..."; # Add audio toggle command ;;
+        *"Bluetooth") echo "Toggling Bluetooth..."; # Add bluetooth toggle ;;
+        *"WiFi") echo "Toggling WiFi..."; # Add wifi toggle ;;
+        *"Dark Mode") echo "Toggling dark mode..."; # Add dark mode toggle ;;
+        *"Night Light") echo "Toggling night light..."; # Add night light toggle ;;
+        *"Notifications") echo "Toggling notifications..."; # Add notifications toggle ;;
+        *"Do Not Disturb") echo "Toggling do not disturb..."; # Add DND toggle ;;
+        *) if [ -n "$selected" ]; then echo "Unknown selection: $selected"; fi ;;
+    esac
+}
+
+# Function to show Style sub-menu
+show_style_menu() {
+    style_options="󰏘 Themes\n󰀻 Icons\n Wallpapers\n Fonts\n Colors\n󰌸 Cursors\n Layout"
+    selected=$(echo -e "$style_options" | walker --dmenu --theme archboki-menu -p "Style")
+    
+    case "$selected" in
+        *"Themes") echo "Opening theme settings..."; # Add theme manager ;;
+        *"Icons") echo "Opening icon settings..."; # Add icon manager ;;
+        *"Wallpapers") echo "Opening wallpaper settings..."; # Add wallpaper changer ;;
+        *"Fonts") echo "Opening font settings..."; # Add font manager ;;
+        *"Colors") echo "Opening color settings..."; # Add color picker ;;
+        *"Cursors") echo "Opening cursor settings..."; # Add cursor manager ;;
+        *"Layout") echo "Opening layout settings..."; # Add layout manager ;;
+        *) if [ -n "$selected" ]; then echo "Unknown selection: $selected"; fi ;;
+    esac
+}
+
+# Function to show Setup sub-menu
+show_setup_menu() {
+    setup_options=" Display\n󰕾 Audio\n󰌌 Keyboard\n Mouse\n󰌾 Network\n󰒋 Printer\n Security"
+    selected=$(echo -e "$setup_options" | walker --dmenu --theme archboki-menu -p "Setup")
+    
+    case "$selected" in
+        *"Display") echo "Opening display settings..."; # Add display settings ;;
+        *"Audio") echo "Opening audio settings..."; # Add audio settings ;;
+        *"Keyboard") echo "Opening keyboard settings..."; # Add keyboard settings ;;
+        *"Mouse") echo "Opening mouse settings..."; # Add mouse settings ;;
+        *"Network") echo "Opening network settings..."; # Add network settings ;;
+        *"Printer") echo "Opening printer settings..."; # Add printer settings ;;
+        *"Security") echo "Opening security settings..."; # Add security settings ;;
+        *) if [ -n "$selected" ]; then echo "Unknown selection: $selected"; fi ;;
+    esac
+}
+
+# Function to show Install sub-menu
+show_install_menu() {
+    install_options=" Package Manager\n Flatpak\n󰏖 Snap\n AppImage\n󰊠 AUR\n󰇝 Development\n Themes"
+    selected=$(echo -e "$install_options" | walker --dmenu --theme archboki-menu -p "Install")
+    
+    case "$selected" in
+        *"Package Manager") echo "Opening package manager..."; # Add package manager ;;
+        *"Flatpak") echo "Opening Flatpak store..."; # Add flatpak command ;;
+        *"Snap") echo "Opening Snap store..."; snap-store & ;;
+        *"AppImage") echo "Managing AppImages..."; # Add AppImage manager ;;
+        *"AUR") echo "Opening AUR helper..."; # Add AUR helper ;;
+        *"Development") echo "Installing development tools..."; # Add dev tools installer ;;
+        *"Themes") echo "Installing themes..."; # Add theme installer ;;
+        *) if [ -n "$selected" ]; then echo "Unknown selection: $selected"; fi ;;
+    esac
+}
+
+# Function to show Remove sub-menu
+show_remove_menu() {
+    remove_options="󰅖 Applications\n󰏘 Themes\n󰃬 Cache\n󰊠 Packages\n Logs\n Temp Files\n󰆴 Old Kernels"
+    selected=$(echo -e "$remove_options" | walker --dmenu --theme archboki-menu -p "Remove")
+    
+    case "$selected" in
+        *"Applications") echo "Removing applications..."; # Add app remover ;;
+        *"Themes") echo "Removing themes..."; # Add theme remover ;;
+        *"Cache") echo "Clearing cache..."; # Add cache cleaner ;;
+        *"Packages") echo "Removing packages..."; # Add package remover ;;
+        *"Logs") echo "Clearing logs..."; # Add log cleaner ;;
+        *"Temp Files") echo "Removing temp files..."; # Add temp cleaner ;;
+        *"Old Kernels") echo "Removing old kernels..."; # Add kernel cleaner ;;
+        *) if [ -n "$selected" ]; then echo "Unknown selection: $selected"; fi ;;
+    esac
+}
+
+# Function to show Update sub-menu
+show_update_menu() {
+    update_options=" System\n󰏖 Flatpak\n󰊠 AUR\n Firmware\n󰅖 Applications\n Mirrors\n󰚰 Check All"
+    selected=$(echo -e "$update_options" | walker --dmenu --theme archboki-menu -p "Update")
+    
+    case "$selected" in
+        *"System") echo "Updating system..."; # Add system update command ;;
+        *"Flatpak") echo "Updating Flatpak apps..."; flatpak update ;;
+        *"AUR") echo "Updating AUR packages..."; # Add AUR update command ;;
+        *"Firmware") echo "Updating firmware..."; # Add firmware update ;;
+        *"Applications") echo "Updating applications..."; # Add app updater ;;
+        *"Mirrors") echo "Updating mirrors..."; # Add mirror update ;;
+        *"Check All") echo "Checking all updates..."; # Add comprehensive update check ;;
+        *) if [ -n "$selected" ]; then echo "Unknown selection: $selected"; fi ;;
+    esac
+}
+
+# Function to show About sub-menu
+show_about_menu() {
+    about_options=" System Info\n Hardware\n󰑴 Performance\n󰋊 Logs\n Version\n License\n Help"
+    selected=$(echo -e "$about_options" | walker --dmenu --theme archboki-menu -p "About")
+    
+    case "$selected" in
+        *"System Info") echo "Showing system info..."; neofetch ;;
+        *"Hardware") echo "Showing hardware info..."; lshw -short ;;
+        *"Performance") echo "Showing performance info..."; htop ;;
+        *"Logs") echo "Showing system logs..."; journalctl -f ;;
+        *"Version") echo "Showing version info..."; uname -a ;;
+        *"License") echo "Showing license info..."; # Add license viewer ;;
+        *"Help") echo "Showing help..."; # Add help system ;;
+        *) if [ -n "$selected" ]; then echo "Unknown selection: $selected"; fi ;;
+    esac
+}
+
+# Function to show System sub-menu
+show_system_menu() {
+    system_options="󰐥 Power Options\n Services\n󰑭 Processes\n Mounts\n󰜚 Environment\n󰋊 Monitoring\n Maintenance"
+    selected=$(echo -e "$system_options" | walker --dmenu --theme archboki-menu -p "System")
+    
+    case "$selected" in
+        *"Power Options") 
+            power_opts="󰤄 Sleep\n Restart\n󰐥 Shutdown\n Lock Screen\n Log Out"
+            power_choice=$(echo -e "$power_opts" | walker --dmenu --theme archboki-menu -p "Power")
+            case "$power_choice" in
+                *"Sleep") systemctl suspend ;;
+                *"Restart") systemctl reboot ;;
+                *"Shutdown") systemctl poweroff ;;
+                *"Lock Screen") # Add lock command ;;
+                *"Log Out") # Add logout command ;;
+            esac
+            ;;
+        *"Services") echo "Managing services..."; # Add service manager ;;
+        *"Processes") echo "Showing processes..."; htop ;;
+        *"Mounts") echo "Showing mounts..."; lsblk ;;
+        *"Environment") echo "Showing environment..."; env ;;
+        *"Monitoring") echo "Opening system monitor..."; gnome-system-monitor & ;;
+        *"Maintenance") echo "Running maintenance..."; # Add maintenance tools ;;
+        *) if [ -n "$selected" ]; then echo "Unknown selection: $selected"; fi ;;
+    esac
+}
+
+# Main script logic
+main() {
+    while true; do
+        choice=$(show_main_menu)
+        
+        case "$choice" in
+            *"Apps") show_apps_menu ;;
+            *"Learn") show_learn_menu ;;
+            *"Capture") show_capture_menu ;;
+            *"Toggle") show_toggle_menu ;;
+            *"Style") show_style_menu ;;
+            *"Setup") show_setup_menu ;;
+            *"Install") show_install_menu ;;
+            *"Remove") show_remove_menu ;;
+            *"Update") show_update_menu ;;
+            *"About") show_about_menu ;;
+            *"System") show_system_menu ;;
+            "") exit 0 ;;  # Exit if ESC is pressed or no selection
+            *) echo "Unknown option: $choice" ;;
+        esac
+        
+        # Optional: Add a small delay before returning to main menu
+        sleep 1
+    done
+}
+
+# Run the main function
+main

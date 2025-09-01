@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Check if powerprofilesctl and walker are installed
+if ! command -v powerprofilesctl &> /dev/null; then
+    echo "Error: powerprofilesctl not found. Please install power-profiles-daemon."
+    exit 1
+fi
+if ! command -v walker &> /dev/null; then
+    echo "Error: walker not found. Please install walker."
+    exit 1
+fi
+
+# Define the two available profiles
+profiles=("balanced" "power-saver")
+
+# Get the current profile
+current_profile=$(powerprofilesctl get)
+
+# Prepare walker menu input, marking the active profile
+menu_input=""
+for profile in "${profiles[@]}"; do
+    if [ "$profile" == "$current_profile" ]; then
+        menu_input+="* $profile\n"
+    else
+        menu_input+="$profile\n"
+    fi
+done
+
+# Show walker menu and capture selection
+selected=$(echo -e "$menu_input" | walker --dmenu -p "Select Power Profile" | sed 's/ (active)//')
+
+# If no selection is made, exit
+if [ -z "$selected" ]; then
+    echo "No profile selected. Exiting."
+    exit 0
+fi
+
+# Validate the selected profile
+if ! [[ " ${profiles[*]} " =~ " $selected " ]]; then
+    notify-send "Power Profile" "Invalid profile: $selected" -u critical
+    exit 1
+fi
+
+# Show confirmation prompt using walker
+confirm=$(echo -e "Yes\nNo" | walker --dmenu -p "Are you sure you want to set the $selected profile?")
+
+# If no confirmation or "No" is selected, exit
+if [ -z "$confirm" ] || [ "$confirm" == "No" ]; then
+    echo "Profile change cancelled."
+    notify-send "Power Profile" "Profile change cancelled" -u normal
+    exit 0
+fi
+
+# If "Yes" is selected, set the profile
+if [ "$confirm" == "Yes" ]; then
+    powerprofilesctl set "$selected"
+    if [ $? -eq 0 ]; then
+        notify-send "Power Profile" "Switched to $selected"
+    else
+        notify-send "Power Profile" "Failed to switch to $selected" -u critical
+        exit 1
+    fi
+else
+    notify-send "Power Profile" "Invalid confirmation response" -u critical
+    exit 1
+fi

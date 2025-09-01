@@ -1,0 +1,342 @@
+#!/usr/bin/env bash
+
+# Global flag to control the main loop
+EXIT_FLAG=false
+
+# Function to show main menu
+show_main_menu() {
+    options="󰀻 Apps\n󰧑 Learn\n Capture\n󰔎 Toggle\n Style\n Setup\n󰉉 Install\n󰭌 Remove\n Update\n About\n System"
+    echo -e "$options" | rofi -dmenu -p "Type to search"
+}
+
+# Function to show Learn sub-menu
+show_learn_menu() {
+    learn_options=" BokiWebHome\n󰗀 Omarchy\n Hyprland\n󰣇 Arch\n󱆃 Bash\n Neovim"
+    selected=$(echo -e "$learn_options" | rofi -dmenu -p "Learn")
+    
+    case "$selected" in
+    *BokiWebHome*) omarchy-launch-webapp "https://bokiwebhome.link" ;;
+    *Omarchy*) omarchy-launch-webapp "https://learn.omacom.io/2/the-omarchy-manual" ;;
+    *Hyprland*) omarchy-launch-webapp "https://wiki.hypr.land/" ;;
+    *Arch*) omarchy-launch-webapp "https://wiki.archlinux.org/title/Main_page" ;;
+    *Bash*) omarchy-launch-webapp "https://devhints.io/bash" ;;
+    *Neovim*) omarchy-launch-webapp "https://www.lazyvim.org/keymaps" ;;
+    *) if [ -z "$selected" ]; then
+            EXIT_FLAG=true  # Signal main to exit
+            return
+        fi
+    esac
+}
+
+# Function to show Capture sub-menu
+show_capture_menu() {
+    capture_options="  Screenshot\n  Record_Sreen\n Color Picker"
+    selected=$(echo -e "$capture_options" | rofi -dmenu -p "Capture")
+    
+    case "$selected" in
+    *Screenshot*) show_screenshot_menu ;;
+    *Record_Sreen*) show_screen_recording ;;
+    *Color*) pkill hyprpicker || hyprpicker -a ;;
+    *) if [ -z "$selected" ]; then
+            EXIT_FLAG=true  # Signal main to exit
+            return
+        fi
+    esac
+}
+
+## Functions for capture-submenu submenus
+
+show_screenshot_menu() {
+    capture_options="   Region\n   Window\n   Display"
+    selected=$(echo -e "$capture_options" | rofi -dmenu -p "Screenshot")
+    
+    case "$selected" in
+    *Region*) omarchy-cmd-screenshot ;;
+    *Window*) omarchy-cmd-screenshot window ;;
+    *Display*) omarchy-cmd-screenshot output ;;
+    *) if [ -z "$selected" ]; then
+            EXIT_FLAG=true  # Signal main to exit
+            return
+        fi
+
+    esac
+}
+
+show_screen_recording() {
+    capture_options="   Region\n   Display\n"
+    selected=$(echo -e "$capture_options" | rofi -dmenu -p "Screen-Recording")
+    
+    case "$selected" in
+    *Region*) omarchy-cmd-screenrecord ;;
+    *Display*) omarchy-cmd-screenrecord output ;;
+    *) if [ -z "$selected" ]; then
+            EXIT_FLAG=true  # Signal main to exit
+            return
+        fi
+    esac
+}
+
+# Function to show Toggle sub-menu
+show_toggle_menu() {
+    toggle_options="󱄄 Screensaver\n󰔎 Nightlight\n󱫖 Idle\n󰍜 Bar"
+    selected=$(echo -e "$toggle_options" | rofi -dmenu -p "Toggle")
+    
+    case "$selected" in
+    *Screensaver*) omarchy-toggle-screensaver ;;
+    *Nightlight*) omarchy-toggle-nightlight ;;
+    *Idle*) omarchy-toggle-idle ;;
+    *Bar*) omarchy-toggle-waybar ;;
+    *) if [ -z "$selected" ]; then
+            EXIT_FLAG=true  # Signal main to exit
+            return
+        fi
+    esac
+}
+
+# Function to show Style sub-menu
+show_style_menu() {
+    style_options="󰏘 Theme\n Fonts\n Background\n󱄄 Screensaver\n About"
+    selected=$(echo -e "$style_options" | rofi -dmenu -p "Style")
+    
+    case "$selected" in
+    *Theme*) show_theme_menu ;;
+    *Font*) show_font_menu ;;
+    *Background*) omarchy-theme-bg-next ;;
+    *Screensaver*) edit_in_nvim ~/.config/omarchy/branding/screensaver.txt ;;
+    *About*) edit_in_nvim ~/.config/omarchy/branding/about.txt ;;
+    *) if [ -z "$selected" ]; then
+            EXIT_FLAG=true  # Signal main to exit
+            return
+        fi
+    esac
+}
+
+# Function to show Setup sub-menu
+show_setup_menu() {
+  setup_options=" Audio\n  Wifi\n󰂯 Bluetooth\n󱐋 Power Profile\n󰍹  Monitors\n  Keybindings\n  Input\n󰱔  DNS\n Config\n󰈷  Fingerprint\n Fido2"
+  selected=$(echo -e "$setup_options" | rofi -dmenu -p "Setup")
+
+  case $selected in
+    *Audio*) alacritty --class=Wiremix -e wiremix ;;
+    *Wifi*)
+      wezterm start nmtui 
+      ;;
+    *Bluetooth*)
+      blueman-manager
+      ;;
+    *Power*) archboki-power-profiles-menu ;;
+    *Monitors*) edit_in_nvim ~/.config/hypr/monitors.conf ;;
+    *Keybindings*) edit_in_nvim ~/.config/hypr/bindings.conf ;;
+    *Input*) edit_in_nvim ~/.config/hypr/input.conf ;;
+    *DNS*) present_terminal omarchy-setup-dns ;;
+    *Config*) show_setup_config_menu ;;
+    *Fingerprint*) present_terminal omarchy-setup-fingerprint ;;
+    *Fido2*) present_terminal omarchy-setup-fido2 ;;
+    *) if [ -z "$selected" ]; then
+            EXIT_FLAG=true  # Signal main to exit
+            return
+        fi
+  esac
+}
+
+## Functions setup-menu submenus
+
+show_setup_config_menu() {
+    config_opts="  Hyprland\n  Hypridle\n  Hyprlock\n  Hyprsunset\n  Swayosd\n󰌧  Walker\n󰍜  Waybar\n󰞅  XCompose"
+    selected=$(echo -e "$config_opts" | rofi -dmenu -p "Config")
+
+  case $selected in
+  *Hyprland*) edit_in_nvim ~/.config/hypr/hyprland.conf ;;
+  *Hypridle*) edit_in_nvim ~/.config/hypr/hypridle.conf && omarchy-restart-hypridle ;;
+  *Hyprlock*) edit_in_nvim ~/.config/hypr/hyprlock.conf ;;
+  *Hyprsunset*) edit_in_nvim ~/.config/hypr/hyprsunset.conf && omarchy-restart-hyprsunset ;;
+  *Swayosd*) edit_in_nvim ~/.config/swayosd/config.toml && omarchy-restart-swayosd ;;
+  *Walker*) edit_in_nvim ~/.config/walker/config.toml && omarchy-restart-walker ;;
+  *Waybar*) edit_in_nvim ~/.config/waybar/config.jsonc && omarchy-restart-waybar ;;
+  *XCompose*) edit_in_nvim ~/.XCompose && omarchy-restart-xcompose ;;
+  *) if [ -z "$selected" ]; then
+            EXIT_FLAG=true  # Signal main to exit
+            return
+        fi
+  esac
+}
+
+# Function to show Install sub-menu
+show_install_menu() {
+    install_options="󰣇 Package\n󰊠 Aur\n Web\n TUI\n Service\n Style\n󰵮 Development\n Editor\n󱚤 AI\n Gaming"
+    selected=$(echo -e "$install_options" | rofi -dmenu -p "Install")
+    
+    case "$selected" in
+    *Package*) terminal omarchy-pkg-install ;;
+    *AUR*) terminal omarchy-pkg-aur-install ;;
+    *Web*) present_terminal omarchy-webapp-install ;;
+    *TUI*) present_terminal omarchy-tui-install ;;
+    *Service*) show_install_service_menu ;;
+    *Style*) show_install_style_menu ;;
+    *Development*) show_install_development_menu ;;
+    *Editor*) show_install_editor_menu ;;
+    *AI*) show_install_ai_menu ;;
+    *Gaming*) show_install_gaming_menu ;;
+    *) if [ -z "$selected" ]; then
+            EXIT_FLAG=true  # Signal main to exit
+            return
+        fi
+    esac
+}
+
+## Functions for install_menu submenus
+
+show_install_service_menu() {
+    service_options="   Dropbox\n   Tailscale"
+    selected=$(echo -e "$service_options" | rofi -dmenu -p "Install Services")
+    
+    case "$selected" in
+    *Dropbox*) present_terminal omarchy-install-dropbox ;;
+    *Tailscale*) present_terminal omarchy-install-tailscale ;;
+    *) if [ -z "$selected" ]; then
+            EXIT_FLAG=true  # Signal main to exit
+            return
+        fi
+    esac
+}
+
+show_install_style_menu() {
+    style_options=" 󰸌  Theme\n   Background\n   Font"
+    selected=$(echo -e "$style_options" | rofi -dmenu -p "Install Style")
+    
+    case "$selected" in
+    *Theme*) present_terminal omarchy-theme-install ;;
+    *Background*) nautilus ~/.config/omarchy/current/theme/backgrounds ;;
+    *Font*) show_install_font_menu ;;
+    *) if [ -z "$selected" ]; then
+            EXIT_FLAG=true  # Signal main to exit
+            return
+        fi
+    esac
+}
+
+# Function to show Remove sub-menu
+show_remove_menu() {
+    remove_options="󰅖 Package\n Web\n TUI\n Theme\n Fingerprint\n Fido2"
+    selected=$(echo -e "$remove_options" | rofi -dmenu -p "Remove")
+    
+    case "$selected" in
+    *Package*) terminal omarchy-pkg-remove ;;
+    *Web*) present_terminal omarchy-webapp-remove ;;
+    *TUI*) present_terminal omarchy-tui-remove ;;
+    *Theme*) present_terminal omarchy-theme-remove ;;
+    *Fingerprint*) present_terminal "omarchy-setup-fingerprint --remove" ;;
+    *Fido2*) present_terminal "omarchy-setup-fido2 --remove" ;;
+    *) if [ -z "$selected" ]; then
+            EXIT_FLAG=true  # Signal main to exit
+            return
+        fi
+    esac
+}
+
+# Function to show Update sub-menu
+show_update_menu() {
+    update_options=" System\n Omarchy\n Config\n Themes\n Process\n Mirrors\n Timezone"
+    selected=$(echo -e "$update_options" | rofi -dmenu -p "Update")
+    
+    case "$selected" in
+    *Omarchy*) present_terminal omarchy-update ;;
+    *Config*) show_update_config_menu ;;
+    *Themes*) present_terminal omarchy-theme-update ;;
+    *Process*) show_update_process_menu ;;
+    *Timezone*) omarchy-cmd-tzupdate ;;
+    *) if [ -z "$selected" ]; then
+            EXIT_FLAG=true  # Signal main to exit
+            return
+        fi
+    esac
+}
+
+## Function to show About sub-menu
+#show_about_menu() {
+#    about_options=" System Info\n Hardware\n󰑴 Performance\n󰋊 Logs\n Version\n License\n Help"
+#    selected=$(echo -e "$about_options" | rofi -dmenu -p "About")
+#    
+#    case "$selected" in
+#        *"System Info") echo "Showing system info..."; neofetch ;;
+#        *"Hardware") echo "Showing hardware info..."; lshw -short ;;
+#        *"Performance") echo "Showing performance info..."; htop ;;
+#        *"Logs") echo "Showing system logs..."; journalctl -f ;;
+#        *"Version") echo "Showing version info..."; uname -a ;;
+#        *"License") echo "Showing license info..."; # Add license viewer ;;
+#        *"Help") echo "Showing help..."; # Add help system ;;
+#        *) if [ -z "$selected" ]; then
+#            EXIT_FLAG=true  # Signal main to exit
+#            return
+#        fi
+#    esac
+#}
+#
+# Function to show System sub-menu
+show_system_menu() {
+    system_options=" Lock\n Screensaver\n Suspend\n Relaunch\n Restart\n󰐥 Shutdown"
+    selected=$(echo -e "$system_options" | rofi -dmenu -p "System")
+    
+    case "$selected" in
+    *Lock*) omarchy-lock-screen ;;
+    *Screensaver*) omarchy-launch-screensaver force ;;
+    *Suspend*) systemctl suspend ;;
+    *Relaunch*) uwsm stop ;;
+    *Restart*) systemctl reboot ;;
+    *Shutdown*) systemctl poweroff ;;
+    *) if [ -z "$selected" ]; then
+            EXIT_FLAG=true  # Signal main to exit
+            return
+        fi
+    esac
+}
+
+# Main script logic
+main() {
+    while true; do
+
+        # Check the flag before showing menu
+        if [ "$EXIT_FLAG" = true ]; then
+            exit 0
+        fi
+
+
+        choice=$(show_main_menu)
+
+        # Also check if Escape was pressed in main menu
+        if [ -z "$choice" ]; then
+            exit 0
+        fi
+        
+        case "$choice" in
+            *"Apps") rofi -show drun -show-icons -p "Type to search…" ;;
+            *"Learn")  
+                    result=$(show_learn_menu)
+                    if [ "$result" = "EXIT" ]; then exit 0; fi
+                    ;;
+            *"Capture") show_capture_menu ;;
+            *"Toggle") show_toggle_menu ;;
+            *"Style") show_style_menu ;;
+            *"Setup") show_setup_menu ;;
+            *"Install") show_install_menu ;;
+            *"Remove") show_remove_menu ;;
+            *"Update") show_update_menu ;;
+            *"About") alacritty --class Omarchy -o font.size=9 -e bash -c 'fastfetch; read -n 1 -s' ;;
+            *"System") show_system_menu ;;
+            "") exit 0 ;;  # Exit if ESC is pressed or no selection
+            *) echo "Unknown option: $choice" ;;
+        esac
+        
+
+        # Check flag after each menu action
+        if [ "$EXIT_FLAG" = true ]; then
+            exit 0
+        fi
+
+        # Optional: Add a small delay before returning to main menu
+        sleep 1
+    done
+}
+
+# Run the main function
+main

@@ -82,26 +82,12 @@
     "icon": "true",
     "separate-outputs": true
 },
-    "keyboard-state": {
-        "numlock": true,
-        "capslock": true,
-        "format": "{name} {icon}",
-        "format-icons": {
-            "locked": "",
-            "unlocked": ""
-        }
-    },
     "hyprland/language": {
         "format": "{}",
         "format-en": "us",
         "format-mk": "mk",
     },
-    //"custom/keyboard": {
-    //  "format": "{}",
-    //  "exec": "hyprctl devices -j | jq -r '.keyboards[] | select(.main) | .active_keymap' | head -1",
-    //  "on-click": "hyprctl switchxkblayout sonix-usb-device-keyboard next",
-    //  "interval": 1
-    //},
+    
     "custom/keyboard": {
         "exec": "hyprctl devices -j | jq -r '.keyboards[] | select(.main == true) | .active_keymap' | sed 's/English (US)/US/; s/Macedonian/MK/'",
         "on-click": "hyprctl switchxkblayout \"$(hyprctl devices -j | jq -r '.keyboards[] | select(.main == true) | .name')\" next",
@@ -109,13 +95,7 @@
         "interval": 1,
         "tooltip": false
     },
-    //"custom/keyboard": {
-    //    "exec": "hyprctl devices -j | jq -r '.keyboards[] | select(.main == true) | .active_keymap' 2>/dev/null || echo 'US'",
-    //    "on-click": "hyprctl switchxkblayout \"$(hyprctl devices -j | jq -r '.keyboards[] | select(.main == true) | .name')\" next",
-    //    "format": "⌨ {}",
-    //    "interval": 1,
-    //    "tooltip": false
-    //},
+    
     "mpd": {
         "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% ",
         "format-disconnected": "Disconnected ",
